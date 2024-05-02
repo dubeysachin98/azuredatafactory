@@ -1,0 +1,114 @@
+{
+	"name": "AmazonDataFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AmazonDS",
+						"type": "DatasetReference"
+					},
+					"name": "SourceData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          index as string,",
+				"          {Order ID} as string,",
+				"          Date as date,",
+				"          Status as string,",
+				"          Fulfilment as string,",
+				"          {Sales Channel } as string,",
+				"          {ship-service-level} as string,",
+				"          Style as string,",
+				"          SKU as string,",
+				"          Category as string,",
+				"          Size as string,",
+				"          ASIN as string,",
+				"          {Courier Status} as string,",
+				"          Qty as string,",
+				"          currency as string,",
+				"          Amount as string,",
+				"          {ship-city} as string,",
+				"          {ship-state} as string,",
+				"          {ship-postal-code} as string,",
+				"          {ship-country} as string,",
+				"          {promotion-ids} as string,",
+				"          B2B as string,",
+				"          {fulfilled-by} as string,",
+				"          {Unnamed: 22} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SourceData",
+				"SourceData select(mapColumn(",
+				"          {Order ID},",
+				"          Status,",
+				"          Fulfilment,",
+				"          {Sales Channel },",
+				"          {ship-service-level},",
+				"          Style,",
+				"          SKU,",
+				"          Category,",
+				"          Size,",
+				"          ASIN,",
+				"          {Courier Status},",
+				"          Qty,",
+				"          currency,",
+				"          Amount,",
+				"          {ship-city},",
+				"          {ship-state},",
+				"          {ship-postal-code},",
+				"          {ship-country}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          {Order ID},",
+				"          Status,",
+				"          Fulfilment,",
+				"          {Sales Channel },",
+				"          {ship-service-level},",
+				"          Style,",
+				"          SKU,",
+				"          Category,",
+				"          Size,",
+				"          ASIN,",
+				"          {Courier Status},",
+				"          Qty,",
+				"          currency,",
+				"          Amount,",
+				"          {ship-city},",
+				"          {ship-state},",
+				"          {ship-postal-code},",
+				"          {ship-country}",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
