@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LSAzureSqlDatabase'"
 		},
+		"LSBlobFiles_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LSBlobFiles'"
+		},
 		"LSOutputIPL_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LSOutputIPL'"
@@ -56,6 +60,9 @@
 					},
 					"LSAzureSqlDatabase_connectionString": {
 						"value": "[parameters('LSAzureSqlDatabase_connectionString')]"
+					},
+					"LSBlobFiles_connectionString": {
+						"value": "[parameters('LSBlobFiles_connectionString')]"
 					},
 					"LSOutputIPL_connectionString": {
 						"value": "[parameters('LSOutputIPL_connectionString')]"

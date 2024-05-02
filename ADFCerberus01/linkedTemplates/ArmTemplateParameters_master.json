@@ -8,6 +8,9 @@
 		"LSAzureSqlDatabase_connectionString": {
 			"value": ""
 		},
+		"LSBlobFiles_connectionString": {
+			"value": ""
+		},
 		"LSOutputIPL_connectionString": {
 			"value": ""
 		},
