@@ -7,7 +7,45 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "match_no",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "city",
+				"type": "varchar"
+			},
+			{
+				"name": "date_of_match",
+				"type": "date"
+			},
+			{
+				"name": "venue",
+				"type": "varchar"
+			},
+			{
+				"name": "Home_team",
+				"type": "varchar"
+			},
+			{
+				"name": "Away_team",
+				"type": "varchar"
+			},
+			{
+				"name": "Toss_winner",
+				"type": "varchar"
+			},
+			{
+				"name": "Winner",
+				"type": "varchar"
+			},
+			{
+				"name": "Man_of_the_match",
+				"type": "varchar"
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "Match"
