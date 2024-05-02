@@ -1,0 +1,61 @@
+{
+	"name": "DSIPLInputData",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LSforCyprus01",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "IPL_2023_Match_Data.csv",
+				"container": "saleviathan-container01"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "match_no",
+				"type": "String"
+			},
+			{
+				"name": "city",
+				"type": "String"
+			},
+			{
+				"name": "date_of_match",
+				"type": "String"
+			},
+			{
+				"name": "venue",
+				"type": "String"
+			},
+			{
+				"name": "Home_team",
+				"type": "String"
+			},
+			{
+				"name": "Away_team",
+				"type": "String"
+			},
+			{
+				"name": "toss_winner",
+				"type": "String"
+			},
+			{
+				"name": "winner",
+				"type": "String"
+			},
+			{
+				"name": "man_of_the_match",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

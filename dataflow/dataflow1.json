@@ -1,0 +1,86 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "IPLMatchDS",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          match_no as string,",
+				"          city as string,",
+				"          date_of_match as string,",
+				"          venue as string,",
+				"          Home_team as string,",
+				"          Away_team as string,",
+				"          toss_winner as string,",
+				"          winner as string,",
+				"          man_of_the_match as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(date_of_match = toDate(date_of_match, \"dd-mm-yyyy\")) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          match_no,",
+				"          city,",
+				"          date_of_match,",
+				"          venue,",
+				"          Home_team,",
+				"          Away_team,",
+				"          toss_winner,",
+				"          winner,",
+				"          man_of_the_match",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          match_no,",
+				"          city,",
+				"          date_of_match,",
+				"          venue,",
+				"          Home_team,",
+				"          Away_team,",
+				"          toss_winner,",
+				"          winner,",
+				"          man_of_the_match",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

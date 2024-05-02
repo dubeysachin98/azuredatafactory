@@ -1,0 +1,9 @@
+{
+	"name": "ADFCerberus01",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "4c880b90-f5bf-4cf6-9cdf-c6ff8a8cfbee",
+		"tenantId": "b34ba785-ef91-46e3-9262-fe5c5de7b8b8"
+	}
+}
