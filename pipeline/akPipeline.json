@@ -52,7 +52,7 @@
 					},
 					"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
 					"body": {
-						"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"Successfully Data Movement Done\"\n}",
+						"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"Successfully Data Movement Done\"\n}",
 						"type": "Expression"
 					}
 				}
@@ -83,7 +83,7 @@
 					},
 					"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
 					"body": {
-						"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"@{activity('Data flow1').Error.Message}\"\n}",
+						"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"@{activity('Data flow1').Error.Message}\"\n}",
 						"type": "Expression"
 					}
 				}
