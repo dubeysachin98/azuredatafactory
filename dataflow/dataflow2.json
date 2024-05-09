@@ -1,0 +1,104 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "testDataset",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable3",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Row ID} as string,",
+				"          {Order ID} as string,",
+				"          {Order Date} as string,",
+				"          {Ship Date} as string,",
+				"          {Ship Mode} as string,",
+				"          {Customer ID} as string,",
+				"          {Customer Name} as string,",
+				"          Segment as string,",
+				"          {Postal Code} as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Country as string,",
+				"          Region as string,",
+				"          Market as string,",
+				"          {Product ID} as string,",
+				"          {Product Name} as string,",
+				"          {Sub-Category} as string,",
+				"          Category as string,",
+				"          Sales as string,",
+				"          Quantity as string,",
+				"          Discount as string,",
+				"          Profit as string,",
+				"          {Shipping Cost} as string,",
+				"          {Order Priority} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive({Order Date} = toDate({Order Date}),",
+				"          {Ship Date} = toDate({Ship Date})) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          {Order ID},",
+				"          {Ship Mode},",
+				"          {Customer ID},",
+				"          {Customer Name},",
+				"          Segment,",
+				"          {Postal Code},",
+				"          City,",
+				"          State,",
+				"          Country,",
+				"          Region,",
+				"          Market,",
+				"          {Product ID},",
+				"          {Product Name},",
+				"          {Sub-Category},",
+				"          Category,",
+				"          Sales,",
+				"          Quantity,",
+				"          Discount,",
+				"          Profit,",
+				"          {Shipping Cost},",
+				"          {Order Priority},",
+				"          Order_Date = {Order Date},",
+				"          Ship_Date = {Ship Date}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}
