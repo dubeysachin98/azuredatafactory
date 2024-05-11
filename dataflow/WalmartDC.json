@@ -12,16 +12,25 @@
 					"name": "WalamartData"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "WalmartSalseOPdb",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "DCWalmart"
 				},
 				{
-					"name": "select1"
+					"name": "SelectWalamart"
 				},
 				{
-					"name": "filter1"
+					"name": "filterWalmart",
+					"description": "Filtering rows using expressions on columns 'Gender' Where we only extracting female data"
 				}
 			],
 			"scriptLines": [
@@ -47,8 +56,8 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> WalamartData",
-				"WalamartData derive(Date = toDate(Date, 'yyyy-MM-dd')) ~> derivedColumn1",
-				"derivedColumn1 select(mapColumn(",
+				"WalamartData derive(Date = toDate(Date, 'yyyy-MM-dd')) ~> DCWalmart",
+				"DCWalmart select(mapColumn(",
 				"          {Invoice ID},",
 				"          Branch,",
 				"          City,",
@@ -66,8 +75,35 @@
 				"          {gross income}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 filter(Gender=='Female') ~> filter1"
+				"     skipDuplicateMapOutputs: true) ~> SelectWalamart",
+				"SelectWalamart filter(Gender=='Female') ~> filterWalmart",
+				"filterWalmart sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          {Invoice ID},",
+				"          Branch,",
+				"          City,",
+				"          {Customer type},",
+				"          Gender,",
+				"          {Product line},",
+				"          {Unit price},",
+				"          Quantity,",
+				"          {Tax 5%},",
+				"          Total,",
+				"          Date,",
+				"          Payment,",
+				"          cogs,",
+				"          {gross margin percentage},",
+				"          {gross income}",
+				"     )) ~> sink1"
 			]
 		}
 	}

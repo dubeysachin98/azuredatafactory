@@ -1,0 +1,16 @@
+{
+	"name": "WalmartSalseOPdb",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LSforWalmartsales",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "walmart"
+		}
+	}
+}
