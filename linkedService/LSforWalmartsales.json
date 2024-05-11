@@ -1,0 +1,12 @@
+{
+	"name": "LSforWalmartsales",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=vanila-server.database.windows.net;initial catalog=VanilaDB;user id=cyprus",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEYzQzcwQ0E2LUE1MTgtNDhFMi1BNDlELTAyMjgxRUY3RkZDRl85MGRhOTc3NC1mMDU3LTRmNTUtOTM1ZC0wN2ZjNzE4Mjg4MWYiDQp9"
+		}
+	}
+}
