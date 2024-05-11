@@ -27,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LSforCyprus01'"
 		},
+		"LSforWalmartsales_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LSforWalmartsales'"
+		},
 		"LS_ADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://saleviathan01.dfs.core.windows.net/"
@@ -184,6 +188,114 @@
 				"[concat(variables('factoryId'), '/dataflows/dataflow2')]",
 				"[concat(variables('factoryId'), '/datasets/testDataset')]",
 				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WalmartPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "WalmartDF",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "WalmartDC",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"WalamartData": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Email Notification",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "WalmartDF",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
+							"body": {
+								"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"Ran Successfully\"",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Email Notification_copy2",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "WalmartDF",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
+							"body": {
+								"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"@{activity('WalmartDF').Error.Message}\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/WalmartDC')]"
 			]
 		},
 		{
@@ -568,6 +680,27 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTableWalmart')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LSAzureSqlDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "walmart"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LSAzureSqlDatabase')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DSIPLInputData')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -781,6 +914,124 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LSAzureSqlDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WalamartData')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "WalmartSalesData.csv",
+						"fileSystem": "saleviathan-container01"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Invoice ID",
+						"type": "String"
+					},
+					{
+						"name": "Branch",
+						"type": "String"
+					},
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "Customer type",
+						"type": "String"
+					},
+					{
+						"name": "Gender",
+						"type": "String"
+					},
+					{
+						"name": "Product line",
+						"type": "String"
+					},
+					{
+						"name": "Unit price",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Tax 5%",
+						"type": "String"
+					},
+					{
+						"name": "Total",
+						"type": "String"
+					},
+					{
+						"name": "Date",
+						"type": "String"
+					},
+					{
+						"name": "Time",
+						"type": "String"
+					},
+					{
+						"name": "Payment",
+						"type": "String"
+					},
+					{
+						"name": "cogs",
+						"type": "String"
+					},
+					{
+						"name": "gross margin percentage",
+						"type": "String"
+					},
+					{
+						"name": "gross income",
+						"type": "String"
+					},
+					{
+						"name": "Rating",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WalmartSalseOPdb')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LSforWalmartsales",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "walmart"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LSforWalmartsales')]"
 			]
 		},
 		{
@@ -1038,6 +1289,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LSforWalmartsales')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LSforWalmartsales_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AmazonDataFlow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1155,6 +1419,122 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/AmazonDS')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WalmartDC')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "WalamartData",
+								"type": "DatasetReference"
+							},
+							"name": "WalamartData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "WalmartSalseOPdb",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DCWalmart"
+						},
+						{
+							"name": "SelectWalamart"
+						},
+						{
+							"name": "filterWalmart",
+							"description": "Filtering rows using expressions on columns 'Gender' Where we only extracting female data"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {Invoice ID} as string,",
+						"          Branch as string,",
+						"          City as string,",
+						"          {Customer type} as string,",
+						"          Gender as string,",
+						"          {Product line} as string,",
+						"          {Unit price} as string,",
+						"          Quantity as string,",
+						"          {Tax 5%} as string,",
+						"          Total as string,",
+						"          Date as string,",
+						"          Time as string,",
+						"          Payment as string,",
+						"          cogs as string,",
+						"          {gross margin percentage} as string,",
+						"          {gross income} as string,",
+						"          Rating as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> WalamartData",
+						"WalamartData derive(Date = toDate(Date, 'yyyy-MM-dd')) ~> DCWalmart",
+						"DCWalmart select(mapColumn(",
+						"          {Invoice ID},",
+						"          Branch,",
+						"          City,",
+						"          {Customer type},",
+						"          Gender,",
+						"          {Product line},",
+						"          {Unit price},",
+						"          Quantity,",
+						"          {Tax 5%},",
+						"          Total,",
+						"          Date,",
+						"          Payment,",
+						"          cogs,",
+						"          {gross margin percentage},",
+						"          {gross income}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectWalamart",
+						"SelectWalamart filter(Gender=='Female') ~> filterWalmart",
+						"filterWalmart sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          {Invoice ID},",
+						"          Branch,",
+						"          City,",
+						"          {Customer type},",
+						"          Gender,",
+						"          {Product line},",
+						"          {Unit price},",
+						"          Quantity,",
+						"          {Tax 5%},",
+						"          Total,",
+						"          Date,",
+						"          Payment,",
+						"          cogs,",
+						"          {gross margin percentage},",
+						"          {gross income}",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/WalamartData')]",
+				"[concat(variables('factoryId'), '/datasets/WalmartSalseOPdb')]"
 			]
 		},
 		{

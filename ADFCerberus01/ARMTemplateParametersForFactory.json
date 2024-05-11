@@ -20,6 +20,9 @@
 		"LSforCyprus01_connectionString": {
 			"value": ""
 		},
+		"LSforWalmartsales_connectionString": {
+			"value": ""
+		},
 		"LS_ADLS_properties_typeProperties_url": {
 			"value": "https://saleviathan01.dfs.core.windows.net/"
 		}

@@ -13,6 +13,676 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/WalmartDC')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "WalamartData",
+								"type": "DatasetReference"
+							},
+							"name": "WalamartData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "WalmartSalseOPdb",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DCWalmart"
+						},
+						{
+							"name": "SelectWalamart"
+						},
+						{
+							"name": "filterWalmart",
+							"description": "Filtering rows using expressions on columns 'Gender' Where we only extracting female data"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {Invoice ID} as string,",
+						"          Branch as string,",
+						"          City as string,",
+						"          {Customer type} as string,",
+						"          Gender as string,",
+						"          {Product line} as string,",
+						"          {Unit price} as string,",
+						"          Quantity as string,",
+						"          {Tax 5%} as string,",
+						"          Total as string,",
+						"          Date as string,",
+						"          Time as string,",
+						"          Payment as string,",
+						"          cogs as string,",
+						"          {gross margin percentage} as string,",
+						"          {gross income} as string,",
+						"          Rating as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> WalamartData",
+						"WalamartData derive(Date = toDate(Date, 'yyyy-MM-dd')) ~> DCWalmart",
+						"DCWalmart select(mapColumn(",
+						"          {Invoice ID},",
+						"          Branch,",
+						"          City,",
+						"          {Customer type},",
+						"          Gender,",
+						"          {Product line},",
+						"          {Unit price},",
+						"          Quantity,",
+						"          {Tax 5%},",
+						"          Total,",
+						"          Date,",
+						"          Payment,",
+						"          cogs,",
+						"          {gross margin percentage},",
+						"          {gross income}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectWalamart",
+						"SelectWalamart filter(Gender=='Female') ~> filterWalmart",
+						"filterWalmart sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          {Invoice ID},",
+						"          Branch,",
+						"          City,",
+						"          {Customer type},",
+						"          Gender,",
+						"          {Product line},",
+						"          {Unit price},",
+						"          Quantity,",
+						"          {Tax 5%},",
+						"          Total,",
+						"          Date,",
+						"          Payment,",
+						"          cogs,",
+						"          {gross margin percentage},",
+						"          {gross income}",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "IPLMatchDS",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "IPLTableDS",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          match_no as string,",
+						"          city as string,",
+						"          date_of_match as string,",
+						"          venue as string,",
+						"          Home_team as string,",
+						"          Away_team as string,",
+						"          toss_winner as string,",
+						"          winner as string,",
+						"          man_of_the_match as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 derive(date_of_match = toDate(date_of_match, \"dd-mm-yyyy\")) ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          match_no,",
+						"          city,",
+						"          date_of_match,",
+						"          venue,",
+						"          Home_team,",
+						"          Away_team,",
+						"          toss_winner,",
+						"          winner,",
+						"          man_of_the_match",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          match_no,",
+						"          city,",
+						"          date_of_match,",
+						"          venue,",
+						"          Home_team,",
+						"          Away_team,",
+						"          toss_winner,",
+						"          winner,",
+						"          man_of_the_match",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "testDataset",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable3",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {Row ID} as string,",
+						"          {Order ID} as string,",
+						"          {Order Date} as string,",
+						"          {Ship Date} as string,",
+						"          {Ship Mode} as string,",
+						"          {Customer ID} as string,",
+						"          {Customer Name} as string,",
+						"          Segment as string,",
+						"          {Postal Code} as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Country as string,",
+						"          Region as string,",
+						"          Market as string,",
+						"          {Product ID} as string,",
+						"          {Product Name} as string,",
+						"          {Sub-Category} as string,",
+						"          Category as string,",
+						"          Sales as string,",
+						"          Quantity as string,",
+						"          Discount as string,",
+						"          Profit as string,",
+						"          {Shipping Cost} as string,",
+						"          {Order Priority} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 derive({Order Date} = toDate({Order Date}),",
+						"          {Ship Date} = toDate({Ship Date})) ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          {Order ID},",
+						"          {Ship Mode},",
+						"          {Customer ID},",
+						"          {Customer Name},",
+						"          Segment,",
+						"          {Postal Code},",
+						"          City,",
+						"          State,",
+						"          Country,",
+						"          Region,",
+						"          Market,",
+						"          {Product ID},",
+						"          {Product Name},",
+						"          {Sub-Category},",
+						"          Category,",
+						"          Sales,",
+						"          Quantity,",
+						"          Discount,",
+						"          Profit,",
+						"          {Shipping Cost},",
+						"          {Order Priority},",
+						"          Order_Date = {Order Date},",
+						"          Ship_Date = {Ship Date}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Amazon-Data-Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow2",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Delete1",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "Email Notification",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "testDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"logStorageSettings": {
+								"linkedServiceName": {
+									"referenceName": "LS_ADLS",
+									"type": "LinkedServiceReference"
+								},
+								"path": "saleviathan-container01"
+							},
+							"enableLogging": true,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							}
+						}
+					},
+					{
+						"name": "Email Notification_copy1",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Data flow1",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
+							"body": {
+								"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"@{activity('Data flow1').Error.Message}\"\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Email Notification",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Data flow1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
+							"body": {
+								"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"Successfully Data Movement Done\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WalmartPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "WalmartDF",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "WalmartDC",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"WalamartData": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Email Notification",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "WalmartDF",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
+							"body": {
+								"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"Ran Successfully\"",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Email Notification_copy2",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "WalmartDF",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
+							"body": {
+								"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"@{activity('WalmartDF').Error.Message}\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/WalmartDC')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/akPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "AmazonDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SourceData": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Email Notification",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Data flow1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
+							"body": {
+								"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"Successfully Data Movement Done\"\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Email Notification_copy1",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Data flow1",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"url": "https://prod-02.eastus.logic.azure.com:443/workflows/c8ae6cb92b424c64aaa575ab5d01b2d2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BanUnwa0gbSdJ1P3HCYebZMXgSJnNAUGo5mHRGhyXrs",
+							"body": {
+								"value": "{\n    \"PipelineName\":\"@{pipeline().Pipeline}\",\n    \"DataFactory Name\":\"@{pipeline().DataFactory}\",\n    \"Message\":\"@{activity('Data flow1').Error.Message}\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/copyactivity-pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -55,7 +725,9 @@
 				"annotations": [],
 				"lastPublishTime": "2024-05-01T21:50:53Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+			]
 		}
 	]
 }
