@@ -1,0 +1,12 @@
+{
+	"name": "AzureSynapseArtifacts1",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSynapseArtifacts",
+		"typeProperties": {
+			"endpoint": "https://ws-asa-rgsachin01.dev.azuresynapse.net",
+			"authentication": "MSI",
+			"workspaceResourceId": "/subscriptions/bd17ff68-a9ba-4487-8bee-bc774622f380/resourceGroups/RGSachin01/providers/Microsoft.Synapse/workspaces/ws-asa-rgsachin01"
+		}
+	}
+}
